@@ -1,0 +1,8 @@
+name: PlayerDataEdit
+version: '${version}'
+
+main: com.Nightsky.playerDataEdit.PlayerDataEdit
+api-version: '1.8'
+
+authors: [NotNightSky]
+website: skyisa.dev
