@@ -19,3 +19,6 @@ permissions:
     playerdataedit.recheckNBTDirectory:
         description: Allows the player to use the /recheckdirectory command.
         default: op
+    playerdataedit.menu:
+        description: Allows the player to access the main menu.
+        default: op
