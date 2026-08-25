@@ -14,6 +14,19 @@ public class FindNBTDirectory {
     private static final Pattern UUID_DAT_PATTERN = Pattern.compile(
             "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\\.dat$"
     );
+    public static boolean isValid(Path directory) {
+        if (directory == null || !Files.isDirectory(directory)) {
+            return false;
+        }
+        try (Stream<Path> stream = Files.list(directory)) {
+            return stream
+                    .filter(Files::isRegularFile)
+                    .anyMatch(path -> UUID_DAT_PATTERN.matcher(path.getFileName().toString()).matches());
+        } catch (IOException | UncheckedIOException e) {
+            return false;
+        }
+    }
+
     public static Path find(Path startDirectory) {
         try (Stream<Path> stream = Files.walk(startDirectory)) {
             Optional<Path> firstDatFile = stream

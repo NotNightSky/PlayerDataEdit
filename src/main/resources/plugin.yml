@@ -8,3 +8,14 @@ authors: [NotNightSky]
 website: skyisa.dev
 
 depend: [NBTAPI]
+
+commands:
+    recheckdirectory:
+        description: Rechecks the player data (NBT) directory and updates it if stale.
+        usage: /recheckdirectory
+        permission: playerdataedit.recheckNBTDirectory
+
+permissions:
+    playerdataedit.recheckNBTDirectory:
+        description: Allows the player to use the /recheckdirectory command.
+        default: op

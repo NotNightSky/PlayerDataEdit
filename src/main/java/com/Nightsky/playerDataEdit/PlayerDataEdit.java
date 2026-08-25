@@ -1,18 +1,24 @@
 package com.Nightsky.playerDataEdit;
 
 import com.Nightsky.playerDataEdit.Events.onPlayerJoinEvent;
+import com.Nightsky.playerDataEdit.commands.recheckDirectory;
 import com.Nightsky.playerDataEdit.utils.FindNBTDirectory;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 public final class PlayerDataEdit extends JavaPlugin {
 
+    private static PlayerDataEdit instance;
+
     public void onEnable() {
+        instance = this;
         Bukkit.getLogger().info("Loading PlayerDataEdit plugin...");
         saveDefaultConfig();
         getServer().getPluginManager().registerEvents(new onPlayerJoinEvent(), this);
+        Objects.requireNonNull(getCommand("recheckdirectory")).setExecutor(new recheckDirectory());
 
         if (getConfig().getBoolean("firstLaunch", true)) {
             Bukkit.getLogger().info("This is the first launch of the plugin. Performing initial setup...");
@@ -31,5 +37,9 @@ public final class PlayerDataEdit extends JavaPlugin {
 
     public void onDisable() {
         Bukkit.getLogger().info("Unloading PlayerDataEdit plugin...");
+    }
+
+    public static PlayerDataEdit getInstance() {
+        return instance;
     }
 }
