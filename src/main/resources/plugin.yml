@@ -2,7 +2,7 @@ name: PlayerDataEdit
 version: '${version}'
 
 main: com.Nightsky.playerDataEdit.PlayerDataEdit
-api-version: '1.8'
+api-version: '1.13'
 
 authors: [NotNightSky]
 website: skyisa.dev
@@ -14,6 +14,12 @@ commands:
         description: Rechecks the player data (NBT) directory and updates it if stale.
         usage: /recheckdirectory
         permission: playerdataedit.recheckNBTDirectory
+    playerdataedit:
+        description: Opens the player data edit menu, optionally for a specific player.
+        usage: /playerdataedit [playername]
+        aliases:
+            - pde
+        permission: playerdataedit.menu
 
 permissions:
     playerdataedit.recheckNBTDirectory:
