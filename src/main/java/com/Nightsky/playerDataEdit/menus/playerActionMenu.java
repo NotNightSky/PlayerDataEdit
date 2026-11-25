@@ -24,19 +24,16 @@ public class playerActionMenu implements Listener {
     private static final int EDIT_NBT_SLOT = 11;
     private static final int STATUS_SLOT = 13;
     private static final int BACK_SLOT = 15;
-    private static final short DYE_LIME_DATA = 10;
-    private static final short DYE_GRAY_DATA = 8;
 
     public static void open(Player viewer, UUID targetId, String targetName, int returnPage) {
-        MenuHolder holder = new MenuHolder(targetId, returnPage);
+        MenuHolder holder = new MenuHolder(returnPage);
         Inventory menu = Bukkit.createInventory(holder, MENU_SIZE, ChatColor.DARK_GRAY + "Edit: " + targetName);
-        holder.menu = menu;
+        holder.setMenu(menu);
 
         menu.setItem(HEAD_SLOT, playerDataEditMenu.createPlayerHead(targetName));
 
         ItemStack editNbt = CompatItems.create("BOOK", "BOOK");
         ItemMeta editNbtMeta = editNbt.getItemMeta();
-
         editNbtMeta.setDisplayName(ChatColor.AQUA + "Edit NBT");
         editNbtMeta.setLore(Arrays.asList(
                 ChatColor.GRAY + "Edits this player's saved data.",
@@ -45,19 +42,13 @@ public class playerActionMenu implements Listener {
         menu.setItem(EDIT_NBT_SLOT, editNbt);
 
         boolean online = Bukkit.getPlayer(targetId) != null;
-        ItemStack status = online
-                ? CompatItems.create("LIME_DYE", "INK_SACK", DYE_LIME_DATA)
-                : CompatItems.create("GRAY_DYE", "INK_SACK", DYE_GRAY_DATA);
-
+        ItemStack status = CompatItems.createStatusDye(online);
         ItemMeta statusMeta = status.getItemMeta();
-
         statusMeta.setDisplayName(online ? ChatColor.GREEN + "Online" : ChatColor.GRAY + "Offline");
         statusMeta.setLore(Collections.singletonList(ChatColor.GRAY + (online
                 ? "This player is currently on the server."
                 : "This player's data is stored on disk.")));
-
         status.setItemMeta(statusMeta);
-
         menu.setItem(STATUS_SLOT, status);
 
         ItemStack back = CompatItems.create("ARROW", "ARROW");
@@ -100,12 +91,10 @@ public class playerActionMenu implements Listener {
 
     private static class MenuHolder implements InventoryHolder {
 
-        private final UUID targetId;
         private final int returnPage;
         private Inventory menu;
 
-        private MenuHolder(UUID targetId, int returnPage) {
-            this.targetId = targetId;
+        private MenuHolder(int returnPage) {
             this.returnPage = returnPage;
         }
 
@@ -113,6 +102,10 @@ public class playerActionMenu implements Listener {
             return inventory != null && inventory.getHolder() instanceof MenuHolder
                     ? (MenuHolder) inventory.getHolder()
                     : null;
+        }
+
+        private void setMenu(Inventory menu) {
+            this.menu = menu;
         }
 
         @Override

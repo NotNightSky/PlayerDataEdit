@@ -9,9 +9,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
-
 public class playerDataEdit implements CommandExecutor {
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("playerdataedit.menu")) {
@@ -30,23 +29,16 @@ public class playerDataEdit implements CommandExecutor {
         }
 
         String name = args[0];
-        Player online = Bukkit.getPlayerExact(name);
-        UUID targetId;
-        String resolvedName;
-        if (online != null) {
-            targetId = online.getUniqueId();
-            resolvedName = online.getName();
-        } else {
-            OfflinePlayer offline = Bukkit.getOfflinePlayer(name);
-            if (!offline.hasPlayedBefore()) {
-                player.sendMessage("Player not found: " + name);
-                return true;
-            }
-            targetId = offline.getUniqueId();
-            resolvedName = offline.getName();
+        OfflinePlayer target = Bukkit.getPlayerExact(name);
+        if (target == null) {
+            target = Bukkit.getOfflinePlayer(name);
+        }
+        if (!target.hasPlayedBefore()) {
+            player.sendMessage("Player not found: " + name);
+            return true;
         }
 
-        playerActionMenu.open(player, targetId, resolvedName, 0);
+        playerActionMenu.open(player, target.getUniqueId(), target.getName(), 0);
         return true;
     }
 }

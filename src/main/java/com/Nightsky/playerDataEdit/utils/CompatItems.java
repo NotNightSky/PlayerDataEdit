@@ -10,11 +10,6 @@ public final class CompatItems {
     private CompatItems() {
     }
 
-    public static Material resolveMaterial(String modernName, String legacyName) {
-        Material material = usableMaterial(modernName);
-        return material != null ? material : usableMaterial(legacyName);
-    }
-
     public static ItemStack create(String modernName, String legacyName) {
         return new ItemStack(resolveMaterialOrThrow(modernName, legacyName));
     }
@@ -26,8 +21,18 @@ public final class CompatItems {
                 : new ItemStack(material);
     }
 
+    public static ItemStack createStatusDye(boolean available) {
+        return available
+                ? create("LIME_DYE", "INK_SACK", (short) 10)
+                : create("GRAY_DYE", "INK_SACK", (short) 8);
+    }
+
     private static Material resolveMaterialOrThrow(String modernName, String legacyName) {
-        return Objects.requireNonNull(resolveMaterial(modernName, legacyName),
+        Material material = usableMaterial(modernName);
+        if (material == null) {
+            material = usableMaterial(legacyName);
+        }
+        return Objects.requireNonNull(material,
                 "No usable material for modern=" + modernName + ", legacy=" + legacyName);
     }
 

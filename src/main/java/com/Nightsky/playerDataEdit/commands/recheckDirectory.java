@@ -2,7 +2,6 @@ package com.Nightsky.playerDataEdit.commands;
 
 import com.Nightsky.playerDataEdit.PlayerDataEdit;
 import com.Nightsky.playerDataEdit.utils.FindNBTDirectory;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -10,7 +9,12 @@ import org.bukkit.command.CommandSender;
 import java.nio.file.Path;
 
 public class recheckDirectory implements CommandExecutor {
-    private final PlayerDataEdit plugin = PlayerDataEdit.getInstance();
+
+    private final PlayerDataEdit plugin;
+
+    public recheckDirectory(PlayerDataEdit plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -19,7 +23,7 @@ public class recheckDirectory implements CommandExecutor {
             return true;
         }
 
-        Path serverRoot = Bukkit.getWorldContainer().toPath().normalize();
+        Path serverRoot = plugin.getServer().getWorldContainer().toPath().normalize();
         String configured = plugin.getConfig().getString("NBTDirectory", "");
         Path currentDirectory = (configured == null || configured.isEmpty())
                 ? null

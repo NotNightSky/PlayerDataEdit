@@ -21,13 +21,10 @@ import java.util.UUID;
 public class playerDataEditMenu implements Listener {
 
     private static final String MENU_TITLE = ChatColor.DARK_GRAY + "Player Data Edit";
-    private static final int MENU_ROWS = 6;
-    private static final int MENU_SIZE = MENU_ROWS * 9;
+    private static final int MENU_SIZE = 54;
     private static final int PLAYER_SLOTS_PER_PAGE = MENU_SIZE - 9;
     private static final int PREV_PAGE_SLOT = MENU_SIZE - 9 + 3;
     private static final int NEXT_PAGE_SLOT = MENU_SIZE - 9 + 5;
-    private static final short DYE_LIME_DATA = 10;
-    private static final short DYE_GRAY_DATA = 8;
 
     public static void open(Player player) {
         open(player, 0);
@@ -41,6 +38,7 @@ public class playerDataEditMenu implements Listener {
 
         MenuHolder holder = new MenuHolder(page);
         Inventory menu = Bukkit.createInventory(holder, MENU_SIZE, MENU_TITLE);
+        holder.setMenu(menu);
 
         int start = page * PLAYER_SLOTS_PER_PAGE;
         int end = Math.min(start + PLAYER_SLOTS_PER_PAGE, onlinePlayers.size());
@@ -68,9 +66,7 @@ public class playerDataEditMenu implements Listener {
     }
 
     private static ItemStack createNavButton(String name, boolean available) {
-        ItemStack dye = available
-                ? CompatItems.create("LIME_DYE", "INK_SACK", DYE_LIME_DATA)
-                : CompatItems.create("GRAY_DYE", "INK_SACK", DYE_GRAY_DATA);
+        ItemStack dye = CompatItems.createStatusDye(available);
         ItemMeta meta = dye.getItemMeta();
         meta.setDisplayName(available ? ChatColor.GREEN + name : ChatColor.GRAY + name);
         dye.setItemMeta(meta);
@@ -79,7 +75,8 @@ public class playerDataEditMenu implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof MenuHolder)) {
+        MenuHolder holder = MenuHolder.from(event.getInventory());
+        if (holder == null) {
             return;
         }
 
@@ -89,7 +86,6 @@ public class playerDataEditMenu implements Listener {
             return;
         }
         Player player = (Player) event.getWhoClicked();
-        MenuHolder holder = (MenuHolder) event.getInventory().getHolder();
 
         if (event.getRawSlot() < PLAYER_SLOTS_PER_PAGE) {
             UUID targetId = holder.targetAt(event.getRawSlot());
@@ -108,7 +104,7 @@ public class playerDataEditMenu implements Listener {
 
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent event) {
-        if (event.getInventory().getHolder() instanceof MenuHolder) {
+        if (MenuHolder.from(event.getInventory()) != null) {
             event.setCancelled(true);
         }
     }
@@ -117,9 +113,20 @@ public class playerDataEditMenu implements Listener {
 
         private final int page;
         private final UUID[] targets = new UUID[PLAYER_SLOTS_PER_PAGE];
+        private Inventory menu;
 
         private MenuHolder(int page) {
             this.page = page;
+        }
+
+        private static MenuHolder from(Inventory inventory) {
+            return inventory != null && inventory.getHolder() instanceof MenuHolder
+                    ? (MenuHolder) inventory.getHolder()
+                    : null;
+        }
+
+        private void setMenu(Inventory menu) {
+            this.menu = menu;
         }
 
         private void setTarget(int slot, UUID targetId) {
@@ -132,7 +139,7 @@ public class playerDataEditMenu implements Listener {
 
         @Override
         public Inventory getInventory() {
-            return null;
+            return menu;
         }
     }
 }
